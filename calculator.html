@@ -1,1 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glassmorphism Scientific Calculator</title>
 
+<style>
+
+:root {
+    /* Orange gradient background matching your Student System */
+    --bg-gradient: linear-gradient(135deg, #ff7e5f, #feb47b); 
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background: var(--bg-gradient);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.calculator-container{
+    width: 100%;
+    max-width: 360px;
+    transition: max-width 0.4s ease;
+}
+
+/* Expands container width when scientific mode is active */
+.calculator-container.scientific-mode {
+    max-width: 540px;
+}
+
+.header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1{
+    color:white;
+    font-size: 24px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Mode Toggle Button in the Corner */
+.btn-mode-toggle {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-mode-toggle.active {
+    background: white;
+    color: #e05536;
+}
+
+/* Frosted Glass Card */
+.calculator-card {
+    background: rgba(255, 245, 240, 0.25);
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 15px 35px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Display Screen */
+.display {
+    width: 100%;
+    height: 75px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.display-history {
+    font-size: 14px;
+    color: #666;
+    min-height: 18px;
+    font-weight: 500;
+}
+
+.display-main {
+    font-size: 28px;
+    font-weight: bold;
+    color: #222;
+    white-space: nowrap;
+}
+
+/* Layout Wrapper for Standard vs Scientific Keys */
+.calculator-body {
+    display: flex;
+    gap: 12px;
+}
+
+/* Hidden Scientific Panel */
+.scientific-panel {
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    flex: 1;
+}
+
+.calculator-container.scientific-mode .scientific-panel {
+    display: grid;
+}
+
+/* Standard Keypad Grid Layout */
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    flex: 2;
+}
+
+.btn {
+    padding: 16px 8px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Fixed High-Visibility Scientific Buttons */
+.btn-sci {
+    background: rgba(255, 255, 255, 0.75);
+    color: #c84427;
+    font-size: 15px;
+    font-weight: 800;
+    border-color: rgba(255, 255, 255, 0.9);
+    text-shadow: none;
+}
+
+.btn-sci:hover {
+    background: #ffffff;
+    color: #e05536;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Operator Buttons */
+.btn-operator {
+    background: rgba(255, 255, 255, 0.85);
+    color: #e05536;
+    font-size: 18px;
+    font-weight: 800;
+    border-color: #ffffff;
+    text-shadow: none;
+}
+
+.btn-operator:hover {
+    background: #ffffff;
+}
+
+/* Special Function Buttons (C, DEL) */
+.btn-clear {
+    background: #ef4444;
+    color: white;
+    border: none;
+    text-shadow: none;
+}
+
+.btn-clear:hover {
+    background: #dc2626;
+}
+
+.btn-del {
+    background: #f97316;
+    color: white;
+    border: none;
+    text-shadow: none;
+}
+
+.btn-del:hover {
+    background: #ea580c;
+}
+
+/* Equals Button */
+.btn-equals {
+    background: #e05536;
+    color: white;
+    border: none;
+    grid-column: span 2;
+    text-shadow: none;
+    font-size: 20px;
+}
+
+.btn-equals:hover {
+    background: #c84427;
+}
+
+</style>
+</head>
+<body>
+
+<div class="calculator-container" id="calcContainer">
+    <div class="header-wrapper">
+        <h1>🧮 Calculator</h1>
+        <button class="btn-mode-toggle" id="modeBtn" onclick="toggleScientificMode()">🔬 Scientific</button>
+    </div>
+    
+    <div class="calculator-card">
+        <div class="display">
+            <div id="history" class="display-history"></div>
+            <div id="output" class="display-main">0</div>
+        </div>
+        
+        <div class="calculator-body">
+            <div class="scientific-panel">
+                <button class="btn btn-sci" onclick="appendFunction('Math.sin')">sin</button>
+                <button class="btn btn-sci" onclick="appendFunction('Math.cos')">cos</button>
+                <button class="btn btn-sci" onclick="appendFunction('Math.tan')">tan</button>
+                <button class="btn btn-sci" onclick="appendFunction('Math.log10')">log</button>
+                <button class="btn btn-sci" onclick="appendFunction('Math.sqrt')">√</button>
+                <button class="btn btn-sci" onclick="appendOperator('**')">xʸ</button>
+                <button class="btn btn-sci" onclick="appendNumber('Math.PI')">π</button>
+                <button class="btn btn-sci" onclick="appendNumber('Math.E')">e</button>
+                <button class="btn btn-sci" onclick="appendNumber('(')">(</button>
+                <button class="btn btn-sci" onclick="appendNumber(')')">)</button>
+            </div>
+
+            <div class="keypad">
+                <button class="btn btn-clear" onclick="clearDisplay()">C</button>
+                <button class="btn btn-del" onclick="deleteLast()">DEL</button>
+                <button class="btn btn-operator" onclick="appendOperator('%')">%</button>
+                <button class="btn btn-operator" onclick="appendOperator('/')">÷</button>
+
+                <button class="btn" onclick="appendNumber('7')">7</button>
+                <button class="btn" onclick="appendNumber('8')">8</button>
+                <button class="btn" onclick="appendNumber('9')">9</button>
+                <button class="btn btn-operator" onclick="appendOperator('*')">×</button>
+
+                <button class="btn" onclick="appendNumber('4')">4</button>
+                <button class="btn" onclick="appendNumber('5')">5</button>
+                <button class="btn" onclick="appendNumber('6')">6</button>
+                <button class="btn btn-operator" onclick="appendOperator('-')">−</button>
+
+                <button class="btn" onclick="appendNumber('1')">1</button>
+                <button class="btn" onclick="appendNumber('2')">2</button>
+                <button class="btn" onclick="appendNumber('3')">3</button>
+                <button class="btn btn-operator" onclick="appendOperator('+')">+</button>
+
+                <button class="btn" onclick="appendNumber('0')">0</button>
+                <button class="btn" onclick="appendNumber('.')">.</button>
+                <button class="btn btn-equals" onclick="calculate()">=</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentInput = "0";
+let historyInput = "";
+let isEvaluated = false;
+
+const outputElement = document.getElementById("output");
+const historyElement = document.getElementById("history");
+const calcContainer = document.getElementById("calcContainer");
+const modeBtn = document.getElementById("modeBtn");
+
+// Toggle Scientific Layout
+function toggleScientificMode() {
+    calcContainer.classList.toggle("scientific-mode");
+    modeBtn.classList.toggle("active");
+    if(calcContainer.classList.contains("scientific-mode")) {
+        modeBtn.innerText = "🔢 Standard";
+    } else {
+        modeBtn.innerText = "🔬 Scientific";
+    }
+}
+
+function updateDisplay() {
+    let displayText = currentInput
+        .replace(/Math\.PI/g, "π")
+        .replace(/Math\.E/g, "e")
+        .replace(/Math\.sin/g, "sin")
+        .replace(/Math\.cos/g, "cos")
+        .replace(/Math\.tan/g, "tan")
+        .replace(/Math\.log10/g, "log")
+        .replace(/Math\.sqrt/g, "√")
+        .replace(/\*\*/g, "^");
+
+    outputElement.innerText = displayText;
+    historyElement.innerText = historyInput;
+}
+
+function appendNumber(num) {
+    if (isEvaluated) {
+        currentInput = "";
+        isEvaluated = false;
+    }
+    
+    if (num === "." && currentInput.includes(".")) return;
+    
+    if (currentInput === "0" && num !== ".") {
+        currentInput = num;
+    } else {
+        currentInput += num;
+    }
+    
+    updateDisplay();
+}
+
+function appendFunction(func) {
+    if (isEvaluated) {
+        currentInput = "";
+        isEvaluated = false;
+    }
+    if (currentInput === "0") {
+        currentInput = func + "(";
+    } else {
+        currentInput += func + "(";
+    }
+    updateDisplay();
+}
+
+function appendOperator(op) {
+    if (isEvaluated) {
+        isEvaluated = false;
+    }
+
+    const lastChar = currentInput.slice(-1);
+    if (["+", "-", "*", "/", "%"].includes(lastChar)) {
+        currentInput = currentInput.slice(0, -1) + op;
+    } else {
+        currentInput += op;
+    }
+    
+    updateDisplay();
+}
+
+function clearDisplay() {
+    currentInput = "0";
+    historyInput = "";
+    isEvaluated = false;
+    updateDisplay();
+}
+
+function deleteLast() {
+    if (isEvaluated) {
+        clearDisplay();
+        return;
+    }
+    
+    if (currentInput.length === 1) {
+        currentInput = "0";
+    } else {
+        currentInput = currentInput.slice(0, -1);
+    }
+    
+    updateDisplay();
+}
+
+function calculate() {
+    try {
+        historyInput = currentInput
+            .replace(/Math\.PI/g, "π")
+            .replace(/Math\.E/g, "e")
+            .replace(/Math\.sin/g, "sin")
+            .replace(/Math\.cos/g, "cos")
+            .replace(/Math\.tan/g, "tan")
+            .replace(/Math\.log10/g, "log")
+            .replace(/Math\.sqrt/g, "√")
+            .replace(/\*\*/g, "^");
+        
+        let expression = currentInput.replace(/%/g, "/100");
+
+        let openParenCount = (expression.match(/\(/g) || []).length;
+        let closeParenCount = (expression.match(/\)/g) || []).length;
+        while(openParenCount > closeParenCount) {
+            expression += ")";
+            closeParenCount++;
+        }
+        
+        let result = eval(expression);
+
+        if (!Number.isInteger(result)) {
+            result = parseFloat(result.toFixed(6));
+        }
+
+        currentInput = String(result);
+        isEvaluated = true;
+    } catch (e) {
+        currentInput = "Error";
+        isEvaluated = true;
+    }
+    
+    updateDisplay();
+}
+
+document.addEventListener("keydown", (event) => {
+    const key = event.key;
+    if (!isNaN(key)) appendNumber(key);
+    if (["+", "-", "*", "/", "%", ".", "(", ")"].includes(key)) appendOperator(key);
+    if (key === "Enter" || key === "=") calculate();
+    if (key === "Backspace") deleteLast();
+    if (key === "Escape") clearDisplay();
+});
+
+</script>
+
+</body>
+</html>
