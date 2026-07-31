@@ -2,75 +2,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Projects</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Projects Dashboard</title>
 
-    <style>
+<style>
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, Helvetica, sans-serif;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
 
-        body{
-            background:linear-gradient(135deg,#3b82f6,#06b6d4);
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            min-height:100vh;
-        }
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#2563eb,#06b6d4);
+    display:flex;
+    flex-direction:column;
+    transition:.3s;
+}
 
-        .container{
-            width:420px;
-            background:white;
-            padding:30px;
-            border-radius:15px;
-            box-shadow:0 10px 30px rgba(0,0,0,.2);
-        }
+body.dark{
+    background:linear-gradient(135deg,#111827,#1f2937);
+    color:white;
+}
 
-        h1{
-            text-align:center;
-            margin-bottom:25px;
-            color:#333;
-        }
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px 40px;
+}
 
-        .btn{
-            display:block;
-            width:100%;
-            padding:15px;
-            margin:12px 0;
-            text-align:center;
-            text-decoration:none;
-            background:#2563eb;
-            color:white;
-            border-radius:10px;
-            font-size:18px;
-            transition:.3s;
-        }
+header h1{
+    color:white;
+}
 
-        .btn:hover{
-            background:#1d4ed8;
-            transform:scale(1.03);
-        }
+#themeBtn{
+    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:white;
+    color:#2563eb;
+    font-size:15px;
+    font-weight:bold;
+    transition:.3s;
+}
 
-    </style>
+#themeBtn:hover{
+    transform:scale(1.05);
+}
 
+.container{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,320px);
+    gap:30px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 12px 30px rgba(0,0,0,.2);
+    position:relative;
+    transition:.35s;
+}
+
+body.dark .card{
+    background:#1f2937;
+}
+
+.card:hover{
+    transform:translateY(-10px) scale(1.03);
+    background:#eef4ff;
+    box-shadow:0 18px 35px rgba(0,0,0,.3);
+}
+
+body.dark .card:hover{
+    background:#374151;
+}
+
+.favorite{
+    position:absolute;
+    top:18px;
+    right:18px;
+    font-size:28px;
+    cursor:pointer;
+}
+
+.icon{
+    font-size:60px;
+    text-align:center;
+}
+
+.card h2{
+    text-align:center;
+    margin:15px 0;
+}
+
+.card p{
+    text-align:center;
+    color:#666;
+    line-height:1.6;
+}
+
+body.dark .card p{
+    color:#ddd;
+}
+
+.openBtn{
+    display:block;
+    margin-top:20px;
+    text-align:center;
+    text-decoration:none;
+    padding:12px;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    transition:.3s;
+}
+
+.openBtn:hover{
+    background:#1d4ed8;
+}
+
+footer{
+    text-align:center;
+    color:white;
+    padding:20px;
+}
+
+@media(max-width:750px){
+
+.grid{
+    grid-template-columns:1fr;
+}
+
+header{
+    flex-direction:column;
+    gap:15px;
+}
+
+}
+
+</style>
 </head>
+
 <body>
+
+<header>
+
+<h1>🚀 Python Projects Dashboard</h1>
+
+<button id="themeBtn">🌙 Dark Mode</button>
+
+</header>
 
 <div class="container">
 
-    <h1>🎮 Python Projects</h1>
+<div class="grid">
 
-    <a href="studenttracker.html" class="btn">🎓 Student Tracker</a>
-    <a href="typespeed.html" class="btn" > Type Speed Test</a>
+<div class="card">
 
-   
+<div class="favorite" onclick="toggleFavorite(this,'studenttracker')">☆</div>
+
+<div class="icon">🎓</div>
+
+<h2>Student Tracker</h2>
+
+<p>
+Add students, search by roll number and manage records efficiently.
+</p>
+
+<a href="studenttracker.html" class="openBtn">
+Open Project
+</a>
+
 </div>
+
+<div class="card">
+
+<div class="favorite" onclick="toggleFavorite(this,'typespeed')">☆</div>
+
+<div class="icon">⌨️</div>
+
+<h2>Typing Speed Test</h2>
+
+<p>
+Test your typing speed and calculate your Words Per Minute (WPM).
+</p>
+
+<a href="typespeed.html" class="openBtn">
+Open Project
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>
+
+© 2026 Ayaan Mubashar • Python Mini Projects
+
+</footer>
+
+<script>
+
+const body=document.body;
+const themeBtn=document.getElementById("themeBtn");
+
+// Load Theme
+
+if(localStorage.getItem("theme")==="dark"){
+
+body.classList.add("dark");
+themeBtn.innerHTML="☀️ Light Mode";
+
+}
+
+themeBtn.onclick=function(){
+
+body.classList.toggle("dark");
+
+if(body.classList.contains("dark")){
+
+localStorage.setItem("theme","dark");
+themeBtn.innerHTML="☀️ Light Mode";
+
+}else{
+
+localStorage.setItem("theme","light");
+themeBtn.innerHTML="🌙 Dark Mode";
+
+}
+
+};
+
+// Favorites
+
+function toggleFavorite(element,id){
+
+let favorites=JSON.parse(localStorage.getItem("favorites"))||[];
+
+if(favorites.includes(id)){
+
+favorites=favorites.filter(item=>item!==id);
+element.innerHTML="☆";
+
+}else{
+
+favorites.push(id);
+element.innerHTML="⭐";
+
+}
+
+localStorage.setItem("favorites",JSON.stringify(favorites));
+
+}
+
+window.onload=function(){
+
+let favorites=JSON.parse(localStorage.getItem("favorites"))||[];
+
+document.querySelectorAll(".favorite").forEach(star=>{
+
+let id=star.getAttribute("onclick").split("'")[1];
+
+if(favorites.includes(id)){
+
+star.innerHTML="⭐";
+
+}
+
+});
+
+};
+
+</script>
 
 </body>
 </html>
-
+```
