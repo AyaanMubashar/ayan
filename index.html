@@ -188,11 +188,29 @@ body.dark .auth-form input {
     text-decoration: underline;
 }
 
-.error-msg {
-    color: #ff3333;
-    font-size: 13px;
-    margin-top: 10px;
-    display: none;
+/* Custom Popup Toast Styles */
+.popup-toast {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(230, 57, 70, 0.95);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 2000;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+}
+
+.popup-toast.show {
+    bottom: 30px;
+    opacity: 1;
 }
 
 /* Dashboard Grid - Expanded Full-Width Layout */
@@ -349,7 +367,6 @@ footer{
         <form class="auth-form" id="authForm" onsubmit="return false;">
             <input type="email" id="email" placeholder="Email Address" required />
             <input type="password" id="password" placeholder="Password" required />
-            <div id="errorMsg" class="error-msg"></div>
             <button id="authBtn" class="auth-btn">Login</button>
         </form>
         
@@ -382,6 +399,8 @@ footer{
     </div>
 
 </div>
+
+<div id="popupToast" class="popup-toast"></div>
 
 <footer>
     © 2026 Ayaan Mubashar • Python Mini Projects
@@ -421,9 +440,44 @@ footer{
   const logoutBtn = document.getElementById("logoutBtn");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
-  const errorMsg = document.getElementById("errorMsg");
+  const popupToast = document.getElementById("popupToast");
 
   let isSignUpMode = false;
+  let toastTimer;
+
+  // Custom Popup Toast Notification
+  function showPopup(message) {
+    popupToast.innerText = message;
+    popupToast.classList.add("show");
+    
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        popupToast.classList.remove("show");
+    }, 3500);
+  }
+
+  // Convert Firebase error codes to user-friendly messages
+  function getFriendlyErrorMessage(errorCode) {
+    switch (errorCode) {
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+            return "⚠️ Incorrect email or password. Please try again.";
+        case "auth/user-not-found":
+            return "⚠️ No account found with this email.";
+        case "auth/invalid-email":
+            return "⚠️ Invalid email format. Please check your input.";
+        case "auth/email-already-in-use":
+            return "⚠️ An account already exists with this email.";
+        case "auth/weak-password":
+            return "⚠️ Password should be at least 6 characters long.";
+        case "auth/missing-password":
+            return "⚠️ Please enter your password.";
+        case "auth/too-many-requests":
+            return "⚠️ Too many failed attempts. Please try again later.";
+        default:
+            return "⚠️ Something went wrong. Please check your credentials.";
+    }
+  }
 
   // Switch to Login Mode
   loginTab.addEventListener("click", () => {
@@ -432,7 +486,6 @@ footer{
     authBtn.innerText = "Login";
     loginTab.classList.add("active");
     signupTab.classList.remove("active");
-    errorMsg.style.display = "none";
   });
 
   // Switch to Sign Up Mode
@@ -442,14 +495,17 @@ footer{
     authBtn.innerText = "Sign Up";
     signupTab.classList.add("active");
     loginTab.classList.remove("active");
-    errorMsg.style.display = "none";
   });
 
   // Auth Button Click Handler
   authBtn.addEventListener("click", async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    errorMsg.style.display = "none";
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+        showPopup("⚠️ Please fill in all fields.");
+        return;
+    }
 
     try {
       if (isSignUpMode) {
@@ -458,8 +514,8 @@ footer{
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (error) {
-      errorMsg.innerText = error.message;
-      errorMsg.style.display = "block";
+      const friendlyMsg = getFriendlyErrorMessage(error.code);
+      showPopup(friendlyMsg);
     }
   });
 
