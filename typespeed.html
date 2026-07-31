@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Speed Test</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#4f46e5,#06b6d4);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    width:500px;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+    color:#333;
+}
+
+#text{
+    background:#f4f4f4;
+    padding:15px;
+    border-radius:8px;
+    font-size:20px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+textarea{
+    width:100%;
+    height:120px;
+    padding:10px;
+    font-size:16px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    resize:none;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:8px;
+    background:#4f46e5;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#3730a3;
+}
+
+#result{
+    margin-top:20px;
+    line-height:1.8;
+    font-size:18px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>⌨️ Typing Speed Test</h1>
+
+<div id="text">HiMeByeMe</div>
+
+<textarea id="typingArea" placeholder="Click Start, then type here..." disabled></textarea>
+
+<button onclick="startTest()">Start Test</button>
+
+<button onclick="finishTest()">Finish Test</button>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+const sentence="HiMeByeMe";
+
+let startTime=0;
+
+function startTest(){
+
+    document.getElementById("typingArea").value="";
+
+    document.getElementById("typingArea").disabled=false;
+
+    document.getElementById("typingArea").focus();
+
+    document.getElementById("result").innerHTML="";
+
+    startTime=new Date().getTime();
+
+}
+
+function finishTest(){
+
+    if(startTime===0){
+
+        alert("Click Start Test first.");
+
+        return;
+
+    }
+
+    let endTime=new Date().getTime();
+
+    let typed=document.getElementById("typingArea").value;
+
+    let seconds=(endTime-startTime)/1000;
+
+    let words=typed.trim()=="" ? 0 : typed.trim().split(/\s+/).length;
+
+    let wpm=((words/seconds)*60).toFixed(2);
+
+    document.getElementById("typingArea").disabled=true;
+
+    document.getElementById("result").innerHTML=`
+        <strong>Time Taken:</strong> ${seconds.toFixed(2)} seconds<br><br>
+        <strong>Words Typed:</strong> ${words}<br><br>
+        <strong>Typing Speed:</strong> ${isFinite(wpm)?wpm:0} WPM
+    `;
+
+    startTime=0;
+
+}
+
+</script>
+
+</body>
+</html>
