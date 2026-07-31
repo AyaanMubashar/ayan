@@ -26,10 +26,12 @@ body{
     justify-content:center;
     align-items:center;
     padding:20px;
+    position: relative;
 }
 
 .container{
-    width:450px;
+    width: 100%;
+    max-width: 600px;
 }
 
 h1{
@@ -69,18 +71,18 @@ h1{
 /* Menu Toggle Buttons */
 .menu-options {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
 .menu-btn {
     flex: 1;
-    padding: 14px;
+    padding: 12px 8px;
     background: rgba(255, 255, 255, 0.25);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 12px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     backdrop-filter: blur(8px);
@@ -126,6 +128,15 @@ h1{
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
+.row {
+    display: flex;
+    gap: 10px;
+}
+
+.row input {
+    flex: 1;
+}
+
 input{
     width:100%;
     padding:12px 14px;
@@ -143,6 +154,20 @@ input:focus{
     border-color: #ffffff;
     background: #ffffff;
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+/* Styling for Readonly Input */
+input[readonly] {
+    background: rgba(255, 255, 255, 0.5);
+    color: #555;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+input[readonly]:focus {
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 input::placeholder {
@@ -178,14 +203,92 @@ button.action-btn:hover{
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-.success{
-    color: #a7f3d0;
-    font-weight:bold;
+/* Feedback message inside Add Card */
+.form-feedback {
+    margin-top: 12px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+    min-height: 20px;
 }
 
-.error{
-    color: #fecaca;
-    font-weight:bold;
+.form-feedback.success {
+    color: #10b981;
+}
+
+.form-feedback.error {
+    color: #ef4444;
+}
+
+/* Database Table Styles */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    color: white;
+}
+
+th, td {
+    padding: 10px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 14px;
+}
+
+th {
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: bold;
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+/* Glassmorphism Notification Toast */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #e05536;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.error-toast {
+    color: #dc2626;
 }
 
 </style>
@@ -204,6 +307,7 @@ button.action-btn:hover{
     <div class="menu-options">
         <button class="menu-btn active" id="addOptionBtn" onclick="showOption('add')">➕ Add Student</button>
         <button class="menu-btn" id="searchOptionBtn" onclick="showOption('search')">🔍 Search Student</button>
+        <button class="menu-btn" id="dbOptionBtn" onclick="showOption('db')">🗄️ Database</button>
     </div>
 
     <div id="addSection" class="toggle-card active">
@@ -212,8 +316,16 @@ button.action-btn:hover{
             <input type="text" id="roll" placeholder="Roll Number">
             <input type="text" id="name" placeholder="Student Name">
             <input type="number" id="age" placeholder="Age">
-            <input type="number" id="marks" placeholder="Marks">
-            <button class="action-btn" onclick="addStudent()">Add Student</button>
+            
+            <div class="row">
+                <input type="number" id="marks" placeholder="Marks Obtained" oninput="autoCalculatePercentage()">
+                <input type="number" id="totalMarks" placeholder="Total Marks" oninput="autoCalculatePercentage()">
+            </div>
+            
+            <input type="text" id="percentage" placeholder="Percentage (%) (Auto-Calculated)" readonly tabindex="-1">
+            
+            <button class="action-btn" id="addBtn">Add Student</button>
+            <div id="addFeedback" class="form-feedback"></div>
         </div>
     </div>
 
@@ -232,87 +344,227 @@ button.action-btn:hover{
         </div>
     </div>
 
+    <div id="dbSection" class="toggle-card">
+        <div class="card">
+            <h2>Student Records</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Marks</th>
+                            <th>Percentage</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script>
 
-let students = JSON.parse(localStorage.getItem("students")) || [];
+let students = [];
+try {
+    students = JSON.parse(localStorage.getItem("students")) || [];
+} catch (e) {
+    console.warn("LocalStorage access failed.", e);
+}
 
-// Function to switch between Add and Search menus
-function showOption(option) {
-    let addSection = document.getElementById("addSection");
-    let searchSection = document.getElementById("searchSection");
-    let addBtn = document.getElementById("addOptionBtn");
-    let searchBtn = document.getElementById("searchOptionBtn");
+document.addEventListener("DOMContentLoaded", () => {
+    const addBtn = document.getElementById("addBtn");
+    if(addBtn) {
+        addBtn.addEventListener("click", addStudent);
+    }
+});
 
-    if (option === 'add') {
-        addSection.classList.add("active");
-        searchSection.classList.remove("active");
-        addBtn.classList.add("active");
-        searchBtn.classList.remove("active");
+// Auto-Calculate Percentage when Marks or Total Marks change
+function autoCalculatePercentage() {
+    let marks = parseFloat(document.getElementById("marks").value);
+    let totalMarks = parseFloat(document.getElementById("totalMarks").value);
+    let percentageInput = document.getElementById("percentage");
+
+    if (!isNaN(marks) && !isNaN(totalMarks) && totalMarks > 0) {
+        let calcPercentage = ((marks / totalMarks) * 100).toFixed(2);
+        percentageInput.value = calcPercentage + "%";
     } else {
-        searchSection.classList.add("active");
-        addSection.classList.remove("active");
-        searchBtn.classList.add("active");
-        addBtn.classList.remove("active");
+        percentageInput.value = "";
     }
 }
 
+// Toast Notification Function
+function showToast(message, isError = false) {
+    let toast = document.getElementById("toast");
+    let feedback = document.getElementById("addFeedback");
+
+    feedback.innerText = message;
+    feedback.className = `form-feedback ${isError ? 'error' : 'success'}`;
+
+    toast.innerText = message;
+    if(isError) {
+        toast.classList.add("error-toast");
+    } else {
+        toast.classList.remove("error-toast");
+    }
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3500);
+}
+
+// Menu Switcher Function
+function showOption(option) {
+    let addSection = document.getElementById("addSection");
+    let searchSection = document.getElementById("searchSection");
+    let dbSection = document.getElementById("dbSection");
+
+    let addBtn = document.getElementById("addOptionBtn");
+    let searchBtn = document.getElementById("searchOptionBtn");
+    let dbBtn = document.getElementById("dbOptionBtn");
+
+    addSection.classList.remove("active");
+    searchSection.classList.remove("active");
+    dbSection.classList.remove("active");
+
+    addBtn.classList.remove("active");
+    searchBtn.classList.remove("active");
+    dbBtn.classList.remove("active");
+
+    if (option === 'add') {
+        addSection.classList.add("active");
+        addBtn.classList.add("active");
+    } else if (option === 'search') {
+        searchSection.classList.add("active");
+        searchBtn.classList.add("active");
+    } else if (option === 'db') {
+        dbSection.classList.add("active");
+        dbBtn.classList.add("active");
+        renderDatabase();
+    }
+}
+
+// Add Student Function
 function addStudent(){
+    let rollInput = document.getElementById("roll");
+    let nameInput = document.getElementById("name");
+    let ageInput = document.getElementById("age");
+    let marksInput = document.getElementById("marks");
+    let totalMarksInput = document.getElementById("totalMarks");
+    let percentageInput = document.getElementById("percentage");
 
-    let roll = document.getElementById("roll").value.trim();
-    let name = document.getElementById("name").value.trim();
-    let age = document.getElementById("age").value.trim();
-    let marks = document.getElementById("marks").value.trim();
+    let roll = rollInput.value.trim();
+    let name = nameInput.value.trim();
+    let age = ageInput.value.trim();
+    let marks = marksInput.value.trim();
+    let totalMarks = totalMarksInput.value.trim();
+    let percentage = percentageInput.value.trim();
 
-    if(roll=="" || name=="" || age=="" || marks==""){
-        alert("Please fill all fields.");
+    if(!roll || !name || !age || !marks || !totalMarks){
+        showToast("⚠️ Please fill in all input fields.", true);
         return;
     }
 
     let exists = students.find(student => student.roll === roll);
 
     if(exists){
-        alert("Student already exists.");
+        showToast(`⚠️ Student with Roll #${roll} already exists.`, true);
         return;
     }
 
-    students.push({
-        roll:roll,
-        name:name,
-        age:age,
-        marks:marks
+    // Add new record
+    students.push({ 
+        roll, 
+        name, 
+        age, 
+        marks, 
+        totalMarks, 
+        percentage: percentage || 'N/A' 
     });
 
-    localStorage.setItem("students", JSON.stringify(students));
+    try {
+        localStorage.setItem("students", JSON.stringify(students));
+    } catch(e) {
+        console.error("Failed to save to localStorage", e);
+    }
 
-    alert("Student added successfully!");
+    showToast("✅ Student added successfully!");
 
-    document.getElementById("roll").value="";
-    document.getElementById("name").value="";
-    document.getElementById("age").value="";
-    document.getElementById("marks").value="";
-
+    // Clear Form Fields
+    rollInput.value = "";
+    nameInput.value = "";
+    ageInput.value = "";
+    marksInput.value = "";
+    totalMarksInput.value = "";
+    percentageInput.value = "";
+    rollInput.focus();
 }
 
+// Search Student Function
 function searchStudent(){
-
     let roll = document.getElementById("searchRoll").value.trim();
     let student = students.find(student => student.roll === roll);
     let result = document.getElementById("result");
 
     if(student){
+        let scoreDisplay = `${student.marks} / ${student.totalMarks}`;
         result.innerHTML = `
             <p><strong>Roll No:</strong> ${student.roll}</p>
             <p><strong>Name:</strong> ${student.name}</p>
             <p><strong>Age:</strong> ${student.age}</p>
-            <p><strong>Marks:</strong> ${student.marks}</p>
+            <p><strong>Marks:</strong> ${scoreDisplay}</p>
+            <p><strong>Percentage:</strong> ${student.percentage}</p>
         `;
     }
     else{
         result.innerHTML = "<p class='error'>Student Not Found</p>";
     }
+}
 
+// Render Database Table Function
+function renderDatabase() {
+    let tbody = document.getElementById("studentTableBody");
+    tbody.innerHTML = "";
+
+    if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 15px;">No records found.</td></tr>`;
+        return;
+    }
+
+    students.forEach((student) => {
+        let row = document.createElement("tr");
+        let scoreDisplay = `${student.marks}/${student.totalMarks}`;
+        row.innerHTML = `
+            <td>${student.roll}</td>
+            <td>${student.name}</td>
+            <td>${student.age}</td>
+            <td>${scoreDisplay}</td>
+            <td>${student.percentage}</td>
+            <td><button class="btn-delete" onclick="deleteStudent('${student.roll}')">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Delete Student Function
+function deleteStudent(roll) {
+    if (confirm(`Are you sure you want to delete student with Roll No: ${roll}?`)) {
+        students = students.filter(student => student.roll !== roll);
+        try {
+            localStorage.setItem("students", JSON.stringify(students));
+        } catch(e) {}
+        renderDatabase();
+        showToast("🗑️ Student deleted.");
+    }
 }
 
 </script>
