@@ -311,7 +311,7 @@ footer{
             <div id="errorMsg" class="error-msg"></div>
             <button id="authBtn" class="auth-btn">Login</button>
         </form>
-        <p class="auth-toggle" id="authToggle">Don't have an account? Sign Up</p>
+        <p class="auth-toggle" id="authToggle">Sign Up</p>
     </div>
 
     <div id="dashboardView" class="grid hidden">
@@ -348,16 +348,15 @@ footer{
     onAuthStateChanged 
   } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-  // #put const here
   const firebaseConfig = {
-  apiKey: "AIzaSyCu5rs97FzA06jFF0HEGstEpDXVyJ31564",
-  authDomain: "ayan-1b037.firebaseapp.com",
-  projectId: "ayan-1b037",
-  storageBucket: "ayan-1b037.firebasestorage.app",
-  messagingSenderId: "1093790314062",
-  appId: "1:1093790314062:web:5b7f1569e1a630ce6b9d1f",
-  measurementId: "G-XBHRPG8P3Y"
-};
+    apiKey: "AIzaSyCu5rs97FzA06jFF0HEGstEpDXVyJ31564",
+    authDomain: "ayan-1b037.firebaseapp.com",
+    projectId: "ayan-1b037",
+    storageBucket: "ayan-1b037.firebasestorage.app",
+    messagingSenderId: "1093790314062",
+    appId: "1:1093790314062:web:5b7f1569e1a630ce6b9d1f",
+    measurementId: "G-XBHRPG8P3Y"
+  };
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
@@ -381,7 +380,7 @@ footer{
     isSignUpMode = !isSignUpMode;
     authTitle.innerText = isSignUpMode ? "Sign Up" : "Login";
     authBtn.innerText = isSignUpMode ? "Sign Up" : "Login";
-    authToggle.innerText = isSignUpMode ? "Already have an account? Login" : "Don't have an account? Sign Up";
+    authToggle.innerText = isSignUpMode ? "Login" : "Sign Up";
     errorMsg.style.display = "none";
   });
 
