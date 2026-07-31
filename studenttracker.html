@@ -7,6 +7,11 @@
 
 <style>
 
+:root {
+    /* Change your background color or gradient here */
+    --bg-color: #1e1b4b; 
+}
+
 *{
     margin:0;
     padding:0;
@@ -15,7 +20,7 @@
 }
 
 body{
-    background:linear-gradient(135deg,#4f46e5,#06b6d4);
+    background: var(--bg-color);
     min-height:100vh;
     display:flex;
     justify-content:center;
@@ -30,7 +35,75 @@ body{
 h1{
     text-align:center;
     color:white;
-    margin-bottom:20px;
+    font-size: 24px;
+}
+
+/* Container to center the button under the title */
+.btn-wrapper {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 25px;
+}
+
+/* Back Button Styling */
+.btn-back {
+    display: inline-block;
+    padding: 12px 36px;
+    background-color: #5575ff;
+    color: white;
+    text-decoration: none;
+    border-radius: 18px;
+    font-weight: bold;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-back:hover {
+    background-color: #3f60f0;
+    transform: translateY(-2px);
+}
+
+/* Menu Toggle Buttons */
+.menu-options {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.menu-btn {
+    flex: 1;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    margin-top: 0;
+}
+
+.menu-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.menu-btn.active {
+    background: white;
+    color: #4f46e5;
+    border-color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Hide cards by default when wrapped in toggle sections */
+.toggle-card {
+    display: none;
+}
+
+.toggle-card.active {
+    display: block;
 }
 
 .card{
@@ -60,7 +133,7 @@ input:focus{
     border-color:#4f46e5;
 }
 
-button{
+button.action-btn{
     width:100%;
     padding:12px;
     margin-top:10px;
@@ -73,7 +146,7 @@ button{
     transition:.3s;
 }
 
-button:hover{
+button.action-btn:hover{
     background:#312e81;
 }
 
@@ -101,43 +174,40 @@ button:hover{
 <div class="container">
 
     <h1>🎓 Student Management System</h1>
-    <br>
-    <a href="index.html" class="btn">Back</a>
 
-    <div class="card">
-
-        <h2>Add Student</h2>
-
-        <input type="text" id="roll" placeholder="Roll Number">
-
-        <input type="text" id="name" placeholder="Student Name">
-
-        <input type="number" id="age" placeholder="Age">
-
-        <input type="number" id="marks" placeholder="Marks">
-
-        <button onclick="addStudent()">Add Student</button>
-
+    <div class="btn-wrapper">
+        <a href="index.html" class="btn-back">Back</a>
     </div>
 
-    <div class="card">
-
-        <h2>Search Student</h2>
-
-        <input type="text" id="searchRoll" placeholder="Enter Roll Number">
-
-        <button onclick="searchStudent()">Search</button>
-
+    <div class="menu-options">
+        <button class="menu-btn active" id="addOptionBtn" onclick="showOption('add')">➕ Add Student</button>
+        <button class="menu-btn" id="searchOptionBtn" onclick="showOption('search')">🔍 Search Student</button>
     </div>
 
-    <div class="card">
+    <div id="addSection" class="toggle-card active">
+        <div class="card">
+            <h2>Add Student</h2>
+            <input type="text" id="roll" placeholder="Roll Number">
+            <input type="text" id="name" placeholder="Student Name">
+            <input type="number" id="age" placeholder="Age">
+            <input type="number" id="marks" placeholder="Marks">
+            <button class="action-btn" onclick="addStudent()">Add Student</button>
+        </div>
+    </div>
 
-        <h2>Student Details</h2>
-
-        <div id="result">
-            No student selected.
+    <div id="searchSection" class="toggle-card">
+        <div class="card">
+            <h2>Search Student</h2>
+            <input type="text" id="searchRoll" placeholder="Enter Roll Number">
+            <button class="action-btn" onclick="searchStudent()">Search</button>
         </div>
 
+        <div class="card">
+            <h2>Student Details</h2>
+            <div id="result">
+                No student selected.
+            </div>
+        </div>
     </div>
 
 </div>
@@ -145,6 +215,26 @@ button:hover{
 <script>
 
 let students = JSON.parse(localStorage.getItem("students")) || [];
+
+// Function to switch between Add and Search menus
+function showOption(option) {
+    let addSection = document.getElementById("addSection");
+    let searchSection = document.getElementById("searchSection");
+    let addBtn = document.getElementById("addOptionBtn");
+    let searchBtn = document.getElementById("searchOptionBtn");
+
+    if (option === 'add') {
+        addSection.classList.add("active");
+        searchSection.classList.remove("active");
+        addBtn.classList.add("active");
+        searchBtn.classList.remove("active");
+    } else {
+        searchSection.classList.add("active");
+        addSection.classList.remove("active");
+        searchBtn.classList.add("active");
+        addBtn.classList.remove("active");
+    }
+}
 
 function addStudent(){
 
@@ -154,28 +244,22 @@ function addStudent(){
     let marks = document.getElementById("marks").value.trim();
 
     if(roll=="" || name=="" || age=="" || marks==""){
-
         alert("Please fill all fields.");
         return;
-
     }
 
     let exists = students.find(student => student.roll === roll);
 
     if(exists){
-
         alert("Student already exists.");
         return;
-
     }
 
     students.push({
-
         roll:roll,
         name:name,
         age:age,
         marks:marks
-
     });
 
     localStorage.setItem("students", JSON.stringify(students));
@@ -192,26 +276,19 @@ function addStudent(){
 function searchStudent(){
 
     let roll = document.getElementById("searchRoll").value.trim();
-
     let student = students.find(student => student.roll === roll);
-
     let result = document.getElementById("result");
 
     if(student){
-
         result.innerHTML = `
             <p><strong>Roll No:</strong> ${student.roll}</p>
             <p><strong>Name:</strong> ${student.name}</p>
             <p><strong>Age:</strong> ${student.age}</p>
             <p><strong>Marks:</strong> ${student.marks}</p>
         `;
-
     }
-
     else{
-
         result.innerHTML = "<p class='error'>Student Not Found</p>";
-
     }
 
 }
