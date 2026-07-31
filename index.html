@@ -6,7 +6,6 @@
 <title>Ayan Projects Dashboard</title>
 
 <style>
-
 :root {
     /* Orange gradient background */
     --bg-gradient: linear-gradient(135deg, #ff7e5f, #feb47b);
@@ -36,14 +35,11 @@ header{
     position:sticky;
     top:0;
     z-index:1000;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:15px;
-
     padding:20px 40px;
-
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
@@ -60,7 +56,13 @@ header h1{
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-#themeBtn{
+.header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-style {
     padding:10px 20px;
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius:18px;
@@ -75,7 +77,7 @@ header h1{
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-#themeBtn:hover{
+.btn-style:hover{
     background: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
 }
@@ -88,6 +90,84 @@ header h1{
     padding:30px;
 }
 
+/* Auth Styles */
+.auth-card {
+    background: rgba(255, 245, 240, 0.25);
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    color: white;
+}
+
+body.dark .auth-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-card h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.auth-form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark .auth-form input {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.auth-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #e05536;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all .3s ease;
+}
+
+.auth-btn:hover {
+    background: #c84427;
+    transform: translateY(-2px);
+}
+
+.auth-toggle {
+    margin-top: 15px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.error-msg {
+    color: #ff3333;
+    font-size: 13px;
+    margin-top: 10px;
+    display: none;
+}
+
+/* Dashboard Grid */
 .grid{
     display:grid;
     grid-template-columns:repeat(2, 320px);
@@ -186,162 +266,206 @@ footer{
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
+.hidden {
+    display: none !important;
+}
+
 @media(max-width:750px){
+    .grid{
+        grid-template-columns:1fr;
+    }
 
-.grid{
-    grid-template-columns:1fr;
+    header{
+        padding:15px 20px;
+    }
+
+    .btn-style{
+        font-size:13px;
+        padding:8px 14px;
+    }
+
+    header h1{
+        font-size:20px;
+    }
 }
-
-header{
-    padding:15px 20px;
-}
-
-#themeBtn{
-    font-size:13px;
-    padding:8px 14px;
-}
-
-header h1{
-    font-size:20px;
-}
-
-}
-
 </style>
 </head>
 
 <body>
 
 <header>
-
-<h1>🚀 Ayan Projects Dashboard</h1>
-
-<button id="themeBtn">🌙 Dark Mode</button>
-
+    <h1>🚀 Ayan Projects Dashboard</h1>
+    <div class="header-controls">
+        <button id="themeBtn" class="btn-style">🌙 Dark Mode</button>
+        <button id="logoutBtn" class="btn-style hidden">Logout</button>
+    </div>
 </header>
 
 <div class="container">
 
-<div class="grid">
+    <div id="authView" class="auth-card">
+        <h2 id="authTitle">Login</h2>
+        <form class="auth-form" id="authForm" onsubmit="return false;">
+            <input type="email" id="email" placeholder="Email Address" required />
+            <input type="password" id="password" placeholder="Password" required />
+            <div id="errorMsg" class="error-msg"></div>
+            <button id="authBtn" class="auth-btn">Login</button>
+        </form>
+        <p class="auth-toggle" id="authToggle">Don't have an account? Sign Up</p>
+    </div>
 
-<div class="card">
+    <div id="dashboardView" class="grid hidden">
+        <div class="card">
+            <div class="favorite" onclick="toggleFavorite(this,'studenttracker')">☆</div>
+            <div class="icon">🎓</div>
+            <h2>Student Tracker</h2>
+            <p>Add students, search by roll number and manage records efficiently.</p>
+            <a href="studenttracker.html" class="openBtn">Open Project</a>
+        </div>
 
-<div class="favorite" onclick="toggleFavorite(this,'studenttracker')">☆</div>
-
-<div class="icon">🎓</div>
-
-<h2>Student Tracker</h2>
-
-<p>
-Add students, search by roll number and manage records efficiently.
-</p>
-
-<a href="studenttracker.html" class="openBtn">
-Open Project
-</a>
-
-</div>
-
-<div class="card">
-
-<div class="favorite" onclick="toggleFavorite(this,'typespeed')">☆</div>
-
-<div class="icon">⌨️</div>
-
-<h2>Typing Speed Test</h2>
-
-<p>
-Test your typing speed and calculate your Words Per Minute (WPM).
-</p>
-
-<a href="typespeed.html" class="openBtn">
-Open Project
-</a>
-
-</div>
-
-</div>
+        <div class="card">
+            <div class="favorite" onclick="toggleFavorite(this,'typespeed')">☆</div>
+            <div class="icon">⌨️</div>
+            <h2>Typing Speed Test</h2>
+            <p>Test your typing speed and calculate your Words Per Minute (WPM).</p>
+            <a href="typespeed.html" class="openBtn">Open Project</a>
+        </div>
+    </div>
 
 </div>
 
 <footer>
-
-© 2026 Ayaan Mubashar • Python Mini Projects
-
+    © 2026 Ayaan Mubashar • Python Mini Projects
 </footer>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+  // #put const here
+  const firebaseConfig = {
+  apiKey: "AIzaSyCu5rs97FzA06jFF0HEGstEpDXVyJ31564",
+  authDomain: "ayan-1b037.firebaseapp.com",
+  projectId: "ayan-1b037",
+  storageBucket: "ayan-1b037.firebasestorage.app",
+  messagingSenderId: "1093790314062",
+  appId: "1:1093790314062:web:5b7f1569e1a630ce6b9d1f",
+  measurementId: "G-XBHRPG8P3Y"
+};
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // DOM Elements
+  const authView = document.getElementById("authView");
+  const dashboardView = document.getElementById("dashboardView");
+  const authTitle = document.getElementById("authTitle");
+  const authBtn = document.getElementById("authBtn");
+  const authToggle = document.getElementById("authToggle");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const errorMsg = document.getElementById("errorMsg");
+
+  let isSignUpMode = false;
+
+  // Toggle Login/Signup
+  authToggle.addEventListener("click", () => {
+    isSignUpMode = !isSignUpMode;
+    authTitle.innerText = isSignUpMode ? "Sign Up" : "Login";
+    authBtn.innerText = isSignUpMode ? "Sign Up" : "Login";
+    authToggle.innerText = isSignUpMode ? "Already have an account? Login" : "Don't have an account? Sign Up";
+    errorMsg.style.display = "none";
+  });
+
+  // Auth Button Click Handler
+  authBtn.addEventListener("click", async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    errorMsg.style.display = "none";
+
+    try {
+      if (isSignUpMode) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+    } catch (error) {
+      errorMsg.innerText = error.message;
+      errorMsg.style.display = "block";
+    }
+  });
+
+  // Logout Handler
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth);
+  });
+
+  // Auth State Listener
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      authView.classList.add("hidden");
+      dashboardView.classList.remove("hidden");
+      logoutBtn.classList.remove("hidden");
+    } else {
+      authView.classList.remove("hidden");
+      dashboardView.classList.add("hidden");
+      logoutBtn.classList.add("hidden");
+      emailInput.value = "";
+      passwordInput.value = "";
+    }
+  });
+</script>
+
 <script>
+// UI Theme & Favorites Logic
+const body = document.body;
+const themeBtn = document.getElementById("themeBtn");
 
-const body=document.body;
-const themeBtn=document.getElementById("themeBtn");
-
-// Load Theme
-
-if(localStorage.getItem("theme")==="dark"){
-
-body.classList.add("dark");
-themeBtn.innerHTML="☀️ Light Mode";
-
+if (localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark");
+    themeBtn.innerHTML = "☀️ Light Mode";
 }
 
-themeBtn.onclick=function(){
-
-body.classList.toggle("dark");
-
-if(body.classList.contains("dark")){
-
-localStorage.setItem("theme","dark");
-themeBtn.innerHTML="☀️ Light Mode";
-
-}else{
-
-localStorage.setItem("theme","light");
-themeBtn.innerHTML="🌙 Dark Mode";
-
-}
-
+themeBtn.onclick = function() {
+    body.classList.toggle("dark");
+    if (body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeBtn.innerHTML = "☀️ Light Mode";
+    } else {
+        localStorage.setItem("theme", "light");
+        themeBtn.innerHTML = "🌙 Dark Mode";
+    }
 };
 
-// Favorites
-
-function toggleFavorite(element,id){
-
-let favorites=JSON.parse(localStorage.getItem("favorites"))||[];
-
-if(favorites.includes(id)){
-
-favorites=favorites.filter(item=>item!==id);
-element.innerHTML="☆";
-
-}else{
-
-favorites.push(id);
-element.innerHTML="⭐";
-
+function toggleFavorite(element, id) {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    if (favorites.includes(id)) {
+        favorites = favorites.filter(item => item !== id);
+        element.innerHTML = "☆";
+    } else {
+        favorites.push(id);
+        element.innerHTML = "⭐";
+    }
+    localStorage.setItem("favorites", JSON.stringify(favorites));
 }
 
-localStorage.setItem("favorites",JSON.stringify(favorites));
-
-}
-
-window.onload=function(){
-
-let favorites=JSON.parse(localStorage.getItem("favorites"))||[];
-
-document.querySelectorAll(".favorite").forEach(star=>{
-
-let id=star.getAttribute("onclick").split("'")[1];
-
-if(favorites.includes(id)){
-
-star.innerHTML="⭐";
-
-}
-
-});
-
+window.onload = function() {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    document.querySelectorAll(".favorite").forEach(star => {
+        let id = star.getAttribute("onclick").split("'")[1];
+        if (favorites.includes(id)) {
+            star.innerHTML = "⭐";
+        }
+    });
 };
-
 </script>
 
 </body>
