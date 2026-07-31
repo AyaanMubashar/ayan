@@ -39,25 +39,50 @@ body{
     max-width: 540px;
 }
 
-.header-wrapper {
+/* Frosted Glass Card */
+.calculator-card {
+    background: rgba(255, 245, 240, 0.25);
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 15px 35px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Control Row inside the Calculator Card (Above Display) */
+.calculator-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
-h1{
-    color:white;
-    font-size: 24px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.btn-back {
+    background: rgba(255, 255, 255, 0.35);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
-/* Mode Toggle Button in the Corner */
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* Mode Toggle Button */
 .btn-mode-toggle {
     background: rgba(255, 255, 255, 0.3);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 8px 14px;
+    padding: 6px 14px;
     border-radius: 12px;
     font-size: 13px;
     font-weight: bold;
@@ -75,16 +100,6 @@ h1{
 .btn-mode-toggle.active {
     background: white;
     color: #e05536;
-}
-
-/* Frosted Glass Card */
-.calculator-card {
-    background: rgba(255, 245, 240, 0.25);
-    border-radius:20px;
-    padding:25px;
-    box-shadow:0 15px 35px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 /* Display Screen */
@@ -240,12 +255,13 @@ h1{
 <body>
 
 <div class="calculator-container" id="calcContainer">
-    <div class="header-wrapper">
-        <h1>🧮 Calculator</h1>
-        <button class="btn-mode-toggle" id="modeBtn" onclick="toggleScientificMode()">🔬 Scientific</button>
-    </div>
-    
     <div class="calculator-card">
+        
+        <div class="calculator-controls">
+            <a href="index.html" class="btn-back">⬅ Back</a>
+            <button class="btn-mode-toggle" id="modeBtn" onclick="toggleScientificMode()">🔬 Scientific</button>
+        </div>
+
         <div class="display">
             <div id="history" class="display-history"></div>
             <div id="output" class="display-main">0</div>
