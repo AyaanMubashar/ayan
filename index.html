@@ -153,10 +153,37 @@ body.dark .auth-form input {
     transform: translateY(-2px);
 }
 
-.auth-toggle {
-    margin-top: 15px;
+/* Tab Switching at Bottom */
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab-btn {
     font-size: 14px;
     cursor: pointer;
+    padding: 6px 16px;
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.tab-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.tab-btn.active {
+    color: white;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     text-decoration: underline;
 }
 
@@ -311,7 +338,11 @@ footer{
             <div id="errorMsg" class="error-msg"></div>
             <button id="authBtn" class="auth-btn">Login</button>
         </form>
-        <p class="auth-toggle" id="authToggle">Sign Up</p>
+        
+        <div class="auth-tabs">
+            <span id="loginTab" class="tab-btn active">Login</span>
+            <span id="signupTab" class="tab-btn">Sign Up</span>
+        </div>
     </div>
 
     <div id="dashboardView" class="grid hidden">
@@ -367,7 +398,8 @@ footer{
   const dashboardView = document.getElementById("dashboardView");
   const authTitle = document.getElementById("authTitle");
   const authBtn = document.getElementById("authBtn");
-  const authToggle = document.getElementById("authToggle");
+  const loginTab = document.getElementById("loginTab");
+  const signupTab = document.getElementById("signupTab");
   const logoutBtn = document.getElementById("logoutBtn");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
@@ -375,12 +407,23 @@ footer{
 
   let isSignUpMode = false;
 
-  // Toggle Login/Signup
-  authToggle.addEventListener("click", () => {
-    isSignUpMode = !isSignUpMode;
-    authTitle.innerText = isSignUpMode ? "Sign Up" : "Login";
-    authBtn.innerText = isSignUpMode ? "Sign Up" : "Login";
-    authToggle.innerText = isSignUpMode ? "Login" : "Sign Up";
+  // Switch to Login Mode
+  loginTab.addEventListener("click", () => {
+    isSignUpMode = false;
+    authTitle.innerText = "Login";
+    authBtn.innerText = "Login";
+    loginTab.classList.add("active");
+    signupTab.classList.remove("active");
+    errorMsg.style.display = "none";
+  });
+
+  // Switch to Sign Up Mode
+  signupTab.addEventListener("click", () => {
+    isSignUpMode = true;
+    authTitle.innerText = "Sign Up";
+    authBtn.innerText = "Sign Up";
+    signupTab.classList.add("active");
+    loginTab.classList.remove("active");
     errorMsg.style.display = "none";
   });
 
