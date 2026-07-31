@@ -8,8 +8,8 @@
 <style>
 
 :root {
-    /* Change your background color or gradient here */
-    --bg-color: #1e1b4b; 
+    /* Orange gradient background */
+    --bg-gradient: linear-gradient(135deg, #ff7e5f, #feb47b); 
 }
 
 *{
@@ -20,7 +20,7 @@
 }
 
 body{
-    background: var(--bg-color);
+    background: var(--bg-gradient);
     min-height:100vh;
     display:flex;
     justify-content:center;
@@ -35,7 +35,8 @@ body{
 h1{
     text-align:center;
     color:white;
-    font-size: 24px;
+    font-size: 26px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Container to center the button under the title */
@@ -48,19 +49,20 @@ h1{
 /* Back Button Styling */
 .btn-back {
     display: inline-block;
-    padding: 12px 36px;
-    background-color: #5575ff;
+    padding: 10px 32px;
+    background: rgba(255, 255, 255, 0.3);
     color: white;
     text-decoration: none;
     border-radius: 18px;
     font-weight: bold;
-    font-size: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    font-size: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .btn-back:hover {
-    background-color: #3f60f0;
+    background: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
 }
 
@@ -76,12 +78,12 @@ h1{
     padding: 14px;
     background: rgba(255, 255, 255, 0.25);
     color: white;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
     transition: all 0.3s ease;
     margin-top: 0;
 }
@@ -91,10 +93,10 @@ h1{
 }
 
 .menu-btn.active {
-    background: white;
-    color: #4f46e5;
+    background: rgba(255, 255, 255, 0.9);
+    color: #e05536;
     border-color: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 /* Hide cards by default when wrapped in toggle sections */
@@ -106,63 +108,83 @@ h1{
     display: block;
 }
 
+/* Frosted Glass Cards */
 .card{
-    background:white;
-    border-radius:12px;
-    padding:20px;
+    background: rgba(255, 245, 240, 0.25);
+    border-radius:16px;
+    padding:25px;
     margin-bottom:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,.2);
+    box-shadow:0 15px 35px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .card h2{
-    color:#333;
+    color: white;
     margin-bottom:15px;
+    font-size: 20px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 input{
     width:100%;
-    padding:12px;
+    padding:12px 14px;
     margin:8px 0;
-    border:1px solid #ccc;
-    border-radius:8px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius:10px;
     outline:none;
     font-size:15px;
+    color: #333;
+    background: rgba(255, 255, 255, 0.85);
+    transition: all 0.3s ease;
 }
 
 input:focus{
-    border-color:#4f46e5;
+    border-color: #ffffff;
+    background: #ffffff;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+input::placeholder {
+    color: #777;
 }
 
 button.action-btn{
     width:100%;
     padding:12px;
-    margin-top:10px;
+    margin-top:12px;
     border:none;
-    border-radius:8px;
-    background:#4f46e5;
+    border-radius:10px;
+    background:#e05536;
     color:white;
     font-size:16px;
+    font-weight: bold;
     cursor:pointer;
-    transition:.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
 button.action-btn:hover{
-    background:#312e81;
+    background:#c84427;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 #result{
     margin-top:10px;
     line-height:1.8;
     font-size:17px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .success{
-    color:green;
+    color: #a7f3d0;
     font-weight:bold;
 }
 
 .error{
-    color:red;
+    color: #fecaca;
     font-weight:bold;
 }
 
