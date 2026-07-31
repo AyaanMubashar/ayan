@@ -87,7 +87,8 @@ header h1{
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:30px;
+    padding:40px;
+    width: 100%;
 }
 
 /* Auth Styles */
@@ -99,7 +100,7 @@ header h1{
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.4);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     text-align: center;
     color: white;
 }
@@ -194,23 +195,28 @@ body.dark .auth-form input {
     display: none;
 }
 
-/* Dashboard Grid */
+/* Dashboard Grid - Expanded Full-Width Layout */
 .grid{
-    display:grid;
-    grid-template-columns:repeat(2, 320px);
-    gap:30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 35px;
+    width: 100%;
+    max-width: 1400px;
 }
 
 /* Frosted Glass Cards */
 .card{
     background: rgba(255, 245, 240, 0.25);
-    padding:25px;
-    border-radius:18px;
-    box-shadow:0 15px 35px rgba(0, 0, 0, 0.15);
+    padding: 40px 35px;
+    border-radius: 22px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.4);
-    position:relative;
+    position: relative;
     transition: all .35s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 body.dark .card{
@@ -219,9 +225,9 @@ body.dark .card{
 }
 
 .card:hover{
-    transform:translateY(-10px) scale(1.03);
+    transform: translateY(-10px) scale(1.02);
     background: rgba(255, 255, 255, 0.4);
-    box-shadow:0 20px 40px rgba(0,0,0,.2);
+    box-shadow: 0 20px 40px rgba(0,0,0,.2);
 }
 
 body.dark .card:hover{
@@ -229,11 +235,11 @@ body.dark .card:hover{
 }
 
 .favorite{
-    position:absolute;
-    top:18px;
-    right:18px;
-    font-size:28px;
-    cursor:pointer;
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    font-size: 32px;
+    cursor: pointer;
     user-select: none;
     transition: transform 0.2s ease;
 }
@@ -243,37 +249,41 @@ body.dark .card:hover{
 }
 
 .icon{
-    font-size:60px;
-    text-align:center;
+    font-size: 75px;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .card h2{
-    text-align:center;
-    margin:15px 0;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 26px;
     color: white;
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .card p{
-    text-align:center;
-    color: rgba(255, 255, 255, 0.9);
-    line-height:1.6;
-    font-size: 15px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.6;
+    font-size: 17px;
+    margin-bottom: 10px;
 }
 
 body.dark .card p{
-    color:#ddd;
+    color: #ddd;
 }
 
 .openBtn{
-    display:block;
-    margin-top:20px;
-    text-align:center;
-    text-decoration:none;
-    padding:12px;
-    border-radius:12px;
+    display: block;
+    margin-top: 25px;
+    text-align: center;
+    text-decoration: none;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 14px;
     background: #e05536;
-    color:white;
+    color: white;
     font-weight: bold;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     transition: all .3s ease;
@@ -286,9 +296,9 @@ body.dark .card p{
 }
 
 footer{
-    text-align:center;
-    color:white;
-    padding:20px;
+    text-align: center;
+    color: white;
+    padding: 20px;
     font-size: 14px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
@@ -298,21 +308,25 @@ footer{
 }
 
 @media(max-width:750px){
+    .container {
+        padding: 20px;
+    }
+
     .grid{
-        grid-template-columns:1fr;
+        grid-template-columns: 1fr;
     }
 
     header{
-        padding:15px 20px;
+        padding: 15px 20px;
     }
 
     .btn-style{
-        font-size:13px;
-        padding:8px 14px;
+        font-size: 13px;
+        padding: 8px 14px;
     }
 
     header h1{
-        font-size:20px;
+        font-size: 20px;
     }
 }
 </style>
@@ -348,17 +362,21 @@ footer{
     <div id="dashboardView" class="grid hidden">
         <div class="card">
             <div class="favorite" onclick="toggleFavorite(this,'studenttracker')">☆</div>
-            <div class="icon">🎓</div>
-            <h2>Student Tracker</h2>
-            <p>Add students, search by roll number and manage records efficiently.</p>
+            <div>
+                <div class="icon">🎓</div>
+                <h2>Student Tracker</h2>
+                <p>Add students, search by roll number and manage records efficiently.</p>
+            </div>
             <a href="studenttracker.html" class="openBtn">Open Project</a>
         </div>
 
         <div class="card">
             <div class="favorite" onclick="toggleFavorite(this,'typespeed')">☆</div>
-            <div class="icon">⌨️</div>
-            <h2>Typing Speed Test</h2>
-            <p>Test your typing speed and calculate your Words Per Minute (WPM).</p>
+            <div>
+                <div class="icon">⌨️</div>
+                <h2>Typing Speed Test</h2>
+                <p>Test your typing speed and calculate your Words Per Minute (WPM).</p>
+            </div>
             <a href="typespeed.html" class="openBtn">Open Project</a>
         </div>
     </div>
