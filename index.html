@@ -86,7 +86,7 @@ header h1{
 .container{
     flex:1;
     display:flex;
-    justify-content:center;
+    flex-direction: column;
     align-items:center;
     padding:30px 20px;
     width: 100%;
@@ -104,6 +104,7 @@ header h1{
     max-width: 380px;
     text-align: center;
     color: white;
+    margin: auto;
 }
 
 body.dark .auth-card {
@@ -152,6 +153,24 @@ body.dark .auth-form input {
 
 .auth-btn:hover {
     background: #c84427;
+    transform: translateY(-2px);
+}
+
+.guest-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all .3s ease;
+}
+
+.guest-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
     transform: translateY(-2px);
 }
 
@@ -214,13 +233,38 @@ body.dark .auth-form input {
     opacity: 1;
 }
 
-/* Dashboard Grid - Fixed 2 per row with compact heights */
+/* Dashboard Wrapper & Category Headings */
+.dashboard-wrapper {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.category-title {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 10px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 5px;
+}
+
+/* Dashboard Grid - Fixed 2 per row */
 .grid{
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     width: 100%;
-    max-width: 800px;
+}
+
+/* Games Grid - Takes full row per item */
+.games-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
 }
 
 /* Compact Frosted Glass Cards */
@@ -314,6 +358,21 @@ body.dark .card p{
     box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
 }
 
+.lockedBtn{
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: bold;
+    cursor: not-allowed;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 footer{
     text-align: center;
     color: white;
@@ -371,6 +430,7 @@ footer{
             <input type="password" id="password" placeholder="Password" required />
             <button id="authBtn" class="auth-btn">Login</button>
         </form>
+        <button id="guestBtn" class="guest-btn">Continue as Guest</button>
         
         <div class="auth-tabs">
             <span id="loginTab" class="tab-btn active">Login</span>
@@ -378,44 +438,58 @@ footer{
         </div>
     </div>
 
-    <div id="dashboardView" class="grid hidden">
-        <div class="card">
-            <div class="favorite" onclick="toggleFavorite(this,'studenttracker')">☆</div>
-            <div>
-                <div class="icon">🎓</div>
-                <h2>Student Tracker</h2>
-                <p>Add students, search by roll number and manage records efficiently.</p>
+    <div id="dashboardView" class="dashboard-wrapper hidden">
+        <div>
+            <h3 class="category-title">🛠️ General Tools</h3>
+            <div class="grid">
+                <div class="card">
+                    <div class="favorite" onclick="toggleFavorite(this,'studenttracker')">☆</div>
+                    <div>
+                        <div class="icon">🎓</div>
+                        <h2>Student Tracker</h2>
+                        <p>Add students, search by roll number and manage records efficiently.</p>
+                    </div>
+                    <a href="studenttracker.html" class="openBtn">Open Project</a>
+                </div>
+
+                <div class="card">
+                    <div class="favorite" onclick="toggleFavorite(this,'typespeed')">☆</div>
+                    <div>
+                        <div class="icon">⌨️</div>
+                        <h2>Typing Speed Test</h2>
+                        <p>Test your typing speed and calculate your Words Per Minute (WPM).</p>
+                    </div>
+                    <a href="typespeed.html" class="openBtn">Open Project</a>
+                </div>
+
+                <div class="card">
+                    <div class="favorite" onclick="toggleFavorite(this,'calculator')">☆</div>
+                    <div>
+                        <div class="icon">🧮</div>
+                        <h2>Calculator</h2>
+                        <p>A working calculator with scientific mode.</p>
+                    </div>
+                    <a href="calculator.html" class="openBtn">Open Project</a>
+                </div>
             </div>
-            <a href="studenttracker.html" class="openBtn">Open Project</a>
         </div>
 
-        <div class="card">
-            <div class="favorite" onclick="toggleFavorite(this,'typespeed')">☆</div>
-            <div>
-                <div class="icon">⌨️</div>
-                <h2>Typing Speed Test</h2>
-                <p>Test your typing speed and calculate your Words Per Minute (WPM).</p>
+        <div>
+            <h3 class="category-title">🎮 Games</h3>
+            <div class="games-grid">
+                <div class="card">
+                    <div class="favorite" onclick="toggleFavorite(this,'rockpaper')">☆</div>
+                    <div>
+                        <div class="icon">✊</div>
+                        <h2>Rock, Paper, Scissors</h2>
+                        <p>Read the title</p>
+                    </div>
+                    <div id="gameActionBtnContainer">
+                        <a href="rockpaper.html" id="gameOpenBtn" class="openBtn">Open Project</a>
+                        <div id="gameLockedBtn" class="lockedBtn hidden">🔒 Locked</div>
+                    </div>
+                </div>
             </div>
-            <a href="typespeed.html" class="openBtn">Open Project</a>
-        </div>
-
-        <div class="card">
-            <div class="favorite" onclick="toggleFavorite(this,'calculator')">☆</div>
-            <div>
-                <div class="icon">🧮</div>
-                <h2>Calculator</h2>
-                <p>A working calculator with scientific mode.</p>
-            </div>
-            <a href="calculator.html" class="openBtn">Open Project</a>
-        </div>
-        <div class="card">
-            <div class="favorite" onclick="toggleFavorite(this,'rockpaper')">☆</div>
-            <div>
-                <div class="icon">🎮</div>
-                <h2>Rock, Paper, Scissors</h2>
-                <p>Read the title</p>
-            </div>
-            <a href="rockpaper.html" class="openBtn">Open Project</a>
         </div>
     </div>
 
@@ -429,7 +503,7 @@ footer{
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-  import { 
+  import {  
     getAuth, 
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
@@ -456,15 +530,19 @@ footer{
   const dashboardView = document.getElementById("dashboardView");
   const authTitle = document.getElementById("authTitle");
   const authBtn = document.getElementById("authBtn");
+  const guestBtn = document.getElementById("guestBtn");
   const loginTab = document.getElementById("loginTab");
   const signupTab = document.getElementById("signupTab");
   const logoutBtn = document.getElementById("logoutBtn");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const popupToast = document.getElementById("popupToast");
+  const gameOpenBtn = document.getElementById("gameOpenBtn");
+  const gameLockedBtn = document.getElementById("gameLockedBtn");
 
   let isSignUpMode = false;
   let toastTimer;
+  let isGuestMode = false;
 
   // Custom Popup Toast Notification
   function showPopup(message) {
@@ -529,6 +607,7 @@ footer{
     }
 
     try {
+      isGuestMode = false;
       if (isSignUpMode) {
         await createUserWithEmailAndPassword(auth, email, password);
       } else {
@@ -540,18 +619,45 @@ footer{
     }
   });
 
+  // Guest Mode Handler
+  guestBtn.addEventListener("click", () => {
+      isGuestMode = true;
+      authView.classList.add("hidden");
+      dashboardView.classList.remove("hidden");
+      logoutBtn.classList.remove("hidden");
+      
+      // Restrict game play in guest mode
+      gameOpenBtn.classList.add("hidden");
+      gameLockedBtn.classList.remove("hidden");
+
+      showPopup("✨ Welcome Guest! Games are view-only.");
+  });
+
   // Logout Handler
   logoutBtn.addEventListener("click", () => {
-    signOut(auth);
+      if (isGuestMode) {
+          isGuestMode = false;
+          authView.classList.remove("hidden");
+          dashboardView.classList.add("hidden");
+          logoutBtn.classList.add("hidden");
+          emailInput.value = "";
+          passwordInput.value = "";
+      } else {
+          signOut(auth);
+      }
   });
 
   // Auth State Listener
   onAuthStateChanged(auth, (user) => {
-    if (user) {
+    if (user && !isGuestMode) {
       authView.classList.add("hidden");
       dashboardView.classList.remove("hidden");
       logoutBtn.classList.remove("hidden");
-    } else {
+      
+      // Full access for logged-in users
+      gameOpenBtn.classList.remove("hidden");
+      gameLockedBtn.classList.add("hidden");
+    } else if (!isGuestMode) {
       authView.classList.remove("hidden");
       dashboardView.classList.add("hidden");
       logoutBtn.classList.add("hidden");
