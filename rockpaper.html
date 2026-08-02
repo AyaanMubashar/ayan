@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glassmorphism Rock Paper Scissors</title>
+
+<style>
+
+:root {
+    /* Orange gradient background matching your style template */
+    --bg-gradient: linear-gradient(135deg, #ff7e5f, #feb47b); 
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background: var(--bg-gradient);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.rps-container{
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Frosted Glass Card */
+.rps-card {
+    background: rgba(255, 245, 240, 0.25);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    text-align: center;
+}
+
+/* Control Row (Top Back Button / Title) */
+.rps-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.35);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 6px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.rps-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Display Scoreboard Screen */
+.display {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.display-history {
+    font-size: 14px;
+    color: #666;
+    min-height: 20px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.display-main {
+    font-size: 22px;
+    font-weight: bold;
+    color: #222;
+}
+
+/* Choice Buttons Layout */
+.choices-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 16px 8px;
+    font-size: 15px;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Action Button Style */
+.btn-action {
+    background: #e05536;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    text-shadow: none;
+    display: none; /* Hidden until game finishes/restarts */
+}
+
+.btn-action:hover {
+    background: #c84427;
+    transform: translateY(-2px);
+}
+
+</style>
+</head>
+<body>
+
+<div class="rps-container" id="rpsContainer">
+    <div class="rps-card">
+        
+        <div class="rps-controls">
+            <a href="index.html" class="btn-back">⬅ Back</a>
+            <div class="rps-title">Rock Paper Scissors</div>
+        </div>
+
+        <div class="display">
+            <div id="history" class="display-history">Make your choice to begin!</div>
+            <div id="output" class="display-main">Attempts: 0</div>
+        </div>
+        
+        <div class="choices-grid" id="choicesGrid">
+            <button class="btn" onclick="playGame('Rock')">✊ Rock</button>
+            <button class="btn" onclick="playGame('Paper')">📄 Paper</button>
+            <button class="btn" onclick="playGame('Scissors')">✂️ Scissors</button>
+        </div>
+
+        <button class="btn-action" id="actionBtn" onclick="resetGame()">Play Again</button>
+    </div>
+</div>
+
+<script>
+const options = ["Rock", "Paper", "Scissors"];
+let attempt = 0;
+let computerSelection = options[Math.floor(Math.random() * options.length)];
+let gameEnded = false;
+
+const outputElement = document.getElementById("output");
+const historyElement = document.getElementById("history");
+const choicesGrid = document.getElementById("choicesGrid");
+const actionBtn = document.getElementById("actionBtn");
+
+function playGame(playerChoice) {
+    if (gameEnded) return;
+
+    attempt++;
+
+    if (playerChoice === computerSelection) {
+        historyElement.innerText = `Computer chose: ${computerSelection}`;
+        outputElement.innerText = `Correct in ${getOrdinal(attempt)} attempt! 🎉`;
+        gameEnded = true;
+        choicesGrid.style.display = "none";
+        actionBtn.style.display = "block";
+    } else {
+        historyElement.innerText = `Computer chose: ${computerSelection}`;
+        outputElement.innerText = "Not Correct ❌ Try Again!";
+        // Reset computer choice for the next try just like the loop structure
+        computerSelection = options[Math.floor(Math.random() * options.length)];
+    }
+}
+
+function resetGame() {
+    attempt = 0;
+    computerSelection = options[Math.floor(Math.random() * options.length)];
+    gameEnded = false;
+    
+    historyElement.innerText = "Make your choice to begin!";
+    outputElement.innerText = "Attempts: 0";
+    
+    choicesGrid.style.display = "grid";
+    actionBtn.style.display = "none";
+}
+
+// Helper function to format attempt numbers like 1st, 2nd, 3rd, etc.
+function getOrdinal(n) {
+    const s = ["th", "st", "nd", "rd"],
+          v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+</script>
+
+</body>
+</html>
