@@ -1,1 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inactivity Tracker & Alarm</title>
 
+<style>
+:root {
+    --bg-gradient: linear-gradient(135deg, #ff7e5f, #feb47b);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background: var(--bg-gradient);
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+body.dark{
+    background: linear-gradient(135deg, #2d1810, #1a0f0a);
+    color:white;
+}
+
+header{
+    width: 100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 30px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+body.dark header {
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+header h1{
+    color:white;
+    font-size: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.back-btn {
+    padding:8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius:18px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size:14px;
+    font-weight:bold;
+    transition: all .3s ease;
+}
+
+.back-btn:hover{
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.main-card {
+    background: rgba(255, 245, 240, 0.25);
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    text-align: center;
+    color: white;
+}
+
+body.dark .main-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timer-box {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 15px 0;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(46, 204, 113, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.status-badge.alert {
+    background: rgba(231, 76, 60, 0.8);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+video {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 12px;
+    margin-top: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    background: #000;
+}
+
+canvas {
+    display: none;
+}
+
+.btn-action {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: none;
+    background: #e05536;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s;
+}
+
+.btn-action:hover {
+    background: #c84427;
+}
+
+.history-section {
+    background: rgba(255, 245, 240, 0.25);
+    padding: 20px;
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+}
+
+body.dark .history-section {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.history-item {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.history-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.history-item span {
+    font-size: 11px;
+    display: block;
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.8);
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>🚨 Employee Activity Monitor</h1>
+    <a href="index.html" class="back-btn">⬅ Dashboard</a>
+</header>
+
+<div class="container">
+    <div class="main-card">
+        <h2>Inactivity Tracker</h2>
+        <p>Type any key or move the mouse to reset timer.</p>
+        
+        <div class="timer-box" id="timer">10s</div>
+        <div id="status" class="status-badge">Active (Monitoring)</div>
+
+        <div>
+            <video id="webcam" autoplay playsinline muted></video>
+        </div>
+
+        <button class="btn-action" id="startCamBtn" onclick="initCamera()">📹 Start Camera Access</button>
+    </div>
+
+    <div class="history-section">
+        <h3>📸 Inactivity Snapshots History</h3>
+        <div id="historyGrid" class="history-grid"></div>
+    </div>
+</div>
+
+<canvas id="canvas" width="320" height="240"></canvas>
+
+<audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
+<script>
+let timeLeft = 10;
+let timerInterval = null;
+let videoStream = null;
+const timerEl = document.getElementById('timer');
+const statusEl = document.getElementById('status');
+const video = document.getElementById('webcam');
+const canvas = document.getElementById('canvas');
+const alarmSound = document.getElementById('alarmSound');
+
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+}
+
+// Camera Setup
+async function initCamera() {
+    try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = videoStream;
+        document.getElementById('startCamBtn').style.display = 'none';
+        startTimer();
+    } catch (err) {
+        alert("Camera permission is required for auto snapshot feature!");
+    }
+}
+
+// Timer Logic
+function startTimer() {
+    clearInterval(timerInterval);
+    timeLeft = 10;
+    timerEl.innerText = timeLeft + "s";
+    statusEl.innerText = "Active (Monitoring)";
+    statusEl.classList.remove("alert");
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = timeLeft + "s";
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            triggerAlarmAndCapture();
+        }
+    }, 1000);
+}
+
+function resetTimer() {
+    if (timeLeft > 0 && videoStream) {
+        startTimer();
+    }
+}
+
+// Alarm & Photo Capture
+function triggerAlarmAndCapture() {
+    statusEl.innerText = "🚨 INACTIVE DETECTED!";
+    statusEl.classList.add("alert");
+    
+    // Play sound
+    alarmSound.play().catch(e => console.log(e));
+
+    // Capture Frame
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/png');
+
+    saveToHistory(imageData);
+}
+
+// Save Log into LocalStorage
+function saveToHistory(imageData) {
+    let history = JSON.parse(localStorage.getItem('inactivity_history')) || [];
+    const timestamp = new Date().toLocaleTimeString() + " (" + new Date().toLocaleDateString() + ")";
+    
+    history.unshift({ time: timestamp, image: imageData });
+    
+    // Keep max 10 records
+    if (history.length > 10) history.pop();
+    
+    localStorage.setItem('inactivity_history', JSON.stringify(history));
+    renderHistory();
+}
+
+function renderHistory() {
+    let history = JSON.parse(localStorage.getItem('inactivity_history')) || [];
+    const historyGrid = document.getElementById('historyGrid');
+    historyGrid.innerHTML = "";
+
+    if(history.length === 0) {
+        historyGrid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No inactivity records yet.</p>";
+        return;
+    }
+
+    history.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'history-item';
+        card.innerHTML = `
+            <img src="${item.image}" alt="Snapshot">
+            <span>${item.time}</span>
+        `;
+        historyGrid.appendChild(card);
+    });
+}
+
+// User Activity Listeners (Keyboard + Mouse)
+window.addEventListener('keydown', resetTimer);
+window.addEventListener('mousemove', resetTimer);
+
+window.onload = function() {
+    renderHistory();
+    initCamera();
+};
+</script>
+
+</body>
+</html>
