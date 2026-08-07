@@ -7,7 +7,6 @@
 
 <style>
 :root {
-    /* Orange gradient background */
     --bg-gradient: linear-gradient(135deg, #ff7e5f, #feb47b);
 }
 
@@ -53,8 +52,11 @@ body.dark header {
 header h1{
     color:white;
     text-align:left;
-    font-size: 22px;
+    font-size: 20px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .header-controls {
@@ -92,7 +94,6 @@ header h1{
     width: 100%;
 }
 
-/* Auth Styles */
 .auth-card {
     background: rgba(255, 245, 240, 0.25);
     padding: 25px 30px;
@@ -174,7 +175,6 @@ body.dark .auth-form input {
     transform: translateY(-2px);
 }
 
-/* Tab Switching at Bottom */
 .auth-tabs {
     display: flex;
     justify-content: center;
@@ -208,7 +208,77 @@ body.dark .auth-form input {
     text-decoration: underline;
 }
 
-/* Custom Popup Toast Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+.modal-card {
+    background: rgba(255, 245, 240, 0.95);
+    padding: 25px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.6);
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+body.dark .modal-card {
+    background: rgba(30, 20, 15, 0.95);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+}
+
+.avatar-selector {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    justify-items: center;
+    margin: 10px 0;
+}
+
+.avatar-opt {
+    font-size: 26px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.avatar-opt:hover, .avatar-opt.selected {
+    border-color: #e05536;
+    background: rgba(224, 85, 54, 0.15);
+    transform: scale(1.15);
+}
+
 .popup-toast {
     position: fixed;
     bottom: -100px;
@@ -233,7 +303,6 @@ body.dark .auth-form input {
     opacity: 1;
 }
 
-/* Dashboard Wrapper & Category Headings */
 .dashboard-wrapper {
     width: 100%;
     max-width: 800px;
@@ -251,7 +320,6 @@ body.dark .auth-form input {
     padding-bottom: 5px;
 }
 
-/* Dashboard Grid - Fixed 2 per row */
 .grid{
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -259,15 +327,6 @@ body.dark .auth-form input {
     width: 100%;
 }
 
-/* Games Grid - Takes full row per item */
-.games-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    width: 100%;
-}
-
-/* Compact Frosted Glass Cards */
 .card{
     background: rgba(255, 245, 240, 0.25);
     padding: 20px 25px;
@@ -385,28 +444,14 @@ footer{
     display: none !important;
 }
 
-/* Responsive adjustment for small screens */
 @media(max-width:650px){
     .grid{
         grid-template-columns: 1fr;
     }
-
-    .container {
-        padding: 15px;
-    }
-
-    header{
-        padding: 12px 15px;
-    }
-
-    .btn-style{
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-
-    header h1{
-        font-size: 18px;
-    }
+    .container { padding: 15px; }
+    header{ padding: 12px 15px; }
+    .btn-style{ font-size: 12px; padding: 6px 12px; }
+    header h1{ font-size: 16px; }
 }
 </style>
 </head>
@@ -414,8 +459,9 @@ footer{
 <body>
 
 <header>
-    <h1>🚀 Ayan Projects Dashboard</h1>
+    <h1 id="headerGreeting">🚀 Ayan Projects Dashboard</h1>
     <div class="header-controls">
+        <button id="profileBtn" class="btn-style hidden" onclick="openProfileModal()">👤 Profile</button>
         <button id="themeBtn" class="btn-style">🌙 Dark Mode</button>
         <button id="logoutBtn" class="btn-style hidden">Logout</button>
     </div>
@@ -439,10 +485,16 @@ footer{
     </div>
 
     <div id="dashboardView" class="dashboard-wrapper hidden">
+        
+        <div id="favoritesSection" class="hidden">
+            <h3 class="category-title">⭐ Favorites</h3>
+            <div id="favoritesGrid" class="grid"></div>
+        </div>
+
         <div>
             <h3 class="category-title">🛠️ General Tools</h3>
-            <div class="grid">
-                <div class="card">
+            <div id="toolsGrid" class="grid">
+                <div class="card" data-id="studenttracker">
                     <div class="favorite" onclick="toggleFavorite(this,'studenttracker')">☆</div>
                     <div>
                         <div class="icon">🎓</div>
@@ -452,7 +504,7 @@ footer{
                     <a href="studenttracker.html" class="openBtn">Open Project</a>
                 </div>
 
-                <div class="card">
+                <div class="card" data-id="typespeed">
                     <div class="favorite" onclick="toggleFavorite(this,'typespeed')">☆</div>
                     <div>
                         <div class="icon">⌨️</div>
@@ -462,7 +514,7 @@ footer{
                     <a href="typespeed.html" class="openBtn">Open Project</a>
                 </div>
 
-                <div class="card">
+                <div class="card" data-id="calculator">
                     <div class="favorite" onclick="toggleFavorite(this,'calculator')">☆</div>
                     <div>
                         <div class="icon">🧮</div>
@@ -476,23 +528,60 @@ footer{
 
         <div>
             <h3 class="category-title">🎮 Games</h3>
-            <div class="games-grid">
-                <div class="card">
+            <div id="gamesGrid" class="grid">
+                <div class="card" data-id="rockpaper">
                     <div class="favorite" onclick="toggleFavorite(this,'rockpaper')">☆</div>
                     <div>
                         <div class="icon">✊</div>
                         <h2>Rock, Paper, Scissors</h2>
                         <p>Read the title</p>
                     </div>
-                    <div id="gameActionBtnContainer">
-                        <a href="rockpaper.html" id="gameOpenBtn" class="openBtn">Open Project</a>
-                        <div id="gameLockedBtn" class="lockedBtn hidden">🔒 Locked</div>
+                    <div class="gameActionBtnContainer">
+                        <a href="rockpaper.html" class="gameOpenBtn openBtn">Open Project</a>
+                        <div class="gameLockedBtn lockedBtn hidden">🔒 Locked</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+</div>
+
+<div id="profileModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>👤 Profile Settings</h3>
+            <button class="close-btn" onclick="closeProfileModal()">✖</button>
+        </div>
+        <div>
+            <label style="font-size: 13px; font-weight: bold;">Display Name:</label>
+            <input type="text" id="displayNameInput" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc;" placeholder="Enter your name">
+        </div>
+        <div>
+            <label style="font-size: 13px; font-weight: bold;">Choose Avatar:</label>
+            <div class="avatar-selector">
+                <span class="avatar-opt" onclick="selectAvatar('🤖')">🤖</span>
+                <span class="avatar-opt" onclick="selectAvatar('🚀')">🚀</span>
+                <span class="avatar-opt" onclick="selectAvatar('💻')">💻</span>
+                <span class="avatar-opt" onclick="selectAvatar('🎯')">🎯</span>
+                <span class="avatar-opt" onclick="selectAvatar('⚡')">⚡</span>
+                <span class="avatar-opt" onclick="selectAvatar('🦊')">🦊</span>
+                <span class="avatar-opt" onclick="selectAvatar('🐱')">🐱</span>
+                <span class="avatar-opt" onclick="selectAvatar('🐲')">🐲</span>
+                <span class="avatar-opt" onclick="selectAvatar('🔥')">🔥</span>
+                <span class="avatar-opt" onclick="selectAvatar('👑')">👑</span>
+                <span class="avatar-opt" onclick="selectAvatar('🎮')">🎮</span>
+                <span class="avatar-opt" onclick="selectAvatar('👾')">👾</span>
+                <span class="avatar-opt" onclick="selectAvatar('👻')">👻</span>
+                <span class="avatar-opt" onclick="selectAvatar('🦁')">🦁</span>
+                <span class="avatar-opt" onclick="selectAvatar('🌟')">🌟</span>
+                <span class="avatar-opt" onclick="selectAvatar('🎨')">🎨</span>
+                <span class="avatar-opt" onclick="selectAvatar('🧩')">🧩</span>
+                <span class="avatar-opt" onclick="selectAvatar('🛸')">🛸</span>
+            </div>
+        </div>
+        <button class="auth-btn" onclick="saveProfile()">Save Profile</button>
+    </div>
 </div>
 
 <div id="popupToast" class="popup-toast"></div>
@@ -521,11 +610,9 @@ footer{
     measurementId: "G-XBHRPG8P3Y"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // DOM Elements
   const authView = document.getElementById("authView");
   const dashboardView = document.getElementById("dashboardView");
   const authTitle = document.getElementById("authTitle");
@@ -534,17 +621,15 @@ footer{
   const loginTab = document.getElementById("loginTab");
   const signupTab = document.getElementById("signupTab");
   const logoutBtn = document.getElementById("logoutBtn");
+  const profileBtn = document.getElementById("profileBtn");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
   const popupToast = document.getElementById("popupToast");
-  const gameOpenBtn = document.getElementById("gameOpenBtn");
-  const gameLockedBtn = document.getElementById("gameLockedBtn");
 
   let isSignUpMode = false;
   let toastTimer;
   let isGuestMode = false;
 
-  // Custom Popup Toast Notification
   function showPopup(message) {
     popupToast.innerText = message;
     popupToast.classList.add("show");
@@ -555,7 +640,11 @@ footer{
     }, 3500);
   }
 
-  // Convert Firebase error codes to user-friendly messages
+  function setGameAccess(isLocked) {
+    document.querySelectorAll(".gameOpenBtn").forEach(btn => btn.classList.toggle("hidden", isLocked));
+    document.querySelectorAll(".gameLockedBtn").forEach(btn => btn.classList.toggle("hidden", !isLocked));
+  }
+
   function getFriendlyErrorMessage(errorCode) {
     switch (errorCode) {
         case "auth/invalid-credential":
@@ -578,7 +667,6 @@ footer{
     }
   }
 
-  // Switch to Login Mode
   loginTab.addEventListener("click", () => {
     isSignUpMode = false;
     authTitle.innerText = "Login";
@@ -587,7 +675,6 @@ footer{
     signupTab.classList.remove("active");
   });
 
-  // Switch to Sign Up Mode
   signupTab.addEventListener("click", () => {
     isSignUpMode = true;
     authTitle.innerText = "Sign Up";
@@ -596,7 +683,6 @@ footer{
     loginTab.classList.remove("active");
   });
 
-  // Auth Button Click Handler
   authBtn.addEventListener("click", async () => {
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
@@ -614,32 +700,30 @@ footer{
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (error) {
-      const friendlyMsg = getFriendlyErrorMessage(error.code);
-      showPopup(friendlyMsg);
+      showPopup(getFriendlyErrorMessage(error.code));
     }
   });
 
-  // Guest Mode Handler
   guestBtn.addEventListener("click", () => {
       isGuestMode = true;
       authView.classList.add("hidden");
       dashboardView.classList.remove("hidden");
       logoutBtn.classList.remove("hidden");
+      profileBtn.classList.remove("hidden");
       
-      // Restrict game play in guest mode
-      gameOpenBtn.classList.add("hidden");
-      gameLockedBtn.classList.remove("hidden");
-
+      setGameAccess(true);
+      window.setCurrentUserSession("guest");
       showPopup("✨ Welcome Guest! Games are view-only.");
   });
 
-  // Logout Handler
   logoutBtn.addEventListener("click", () => {
+      window.clearUserSession();
       if (isGuestMode) {
           isGuestMode = false;
           authView.classList.remove("hidden");
           dashboardView.classList.add("hidden");
           logoutBtn.classList.add("hidden");
+          profileBtn.classList.add("hidden");
           emailInput.value = "";
           passwordInput.value = "";
       } else {
@@ -647,30 +731,34 @@ footer{
       }
   });
 
-  // Auth State Listener
   onAuthStateChanged(auth, (user) => {
     if (user && !isGuestMode) {
       authView.classList.add("hidden");
       dashboardView.classList.remove("hidden");
       logoutBtn.classList.remove("hidden");
+      profileBtn.classList.remove("hidden");
       
-      // Full access for logged-in users
-      gameOpenBtn.classList.remove("hidden");
-      gameLockedBtn.classList.add("hidden");
+      setGameAccess(false);
+      window.setCurrentUserSession(user.uid, user.email ? user.email.split('@')[0] : "User");
     } else if (!isGuestMode) {
       authView.classList.remove("hidden");
       dashboardView.classList.add("hidden");
       logoutBtn.classList.add("hidden");
+      profileBtn.classList.add("hidden");
       emailInput.value = "";
       passwordInput.value = "";
+      window.clearUserSession();
     }
   });
 </script>
 
 <script>
-// UI Theme & Favorites Logic
+// UI Theme, Favorites & User Profile Logic
 const body = document.body;
 const themeBtn = document.getElementById("themeBtn");
+
+let activeUserId = null;
+let selectedAvatar = "🚀";
 
 if (localStorage.getItem("theme") === "dark") {
     body.classList.add("dark");
@@ -688,26 +776,123 @@ themeBtn.onclick = function() {
     }
 };
 
+function renderFavorites() {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    const favoritesSection = document.getElementById("favoritesSection");
+    const favoritesGrid = document.getElementById("favoritesGrid");
+
+    if (favorites.length === 0) {
+        favoritesSection.classList.add("hidden");
+    } else {
+        favoritesSection.classList.remove("hidden");
+    }
+
+    document.querySelectorAll(".card").forEach(card => {
+        let id = card.getAttribute("data-id");
+        let star = card.querySelector(".favorite");
+
+        if (favorites.includes(id)) {
+            star.innerHTML = "⭐";
+            if (!favoritesGrid.contains(card)) {
+                favoritesGrid.appendChild(card);
+            }
+        } else {
+            star.innerHTML = "☆";
+            if (id === "rockpaper") {
+                document.getElementById("gamesGrid").appendChild(card);
+            } else {
+                document.getElementById("toolsGrid").appendChild(card);
+            }
+        }
+    });
+}
+
 function toggleFavorite(element, id) {
     let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
     if (favorites.includes(id)) {
         favorites = favorites.filter(item => item !== id);
-        element.innerHTML = "☆";
     } else {
         favorites.push(id);
-        element.innerHTML = "⭐";
     }
     localStorage.setItem("favorites", JSON.stringify(favorites));
+    renderFavorites();
+}
+
+// Session & Account Profile Handlers
+window.setCurrentUserSession = function(userId, defaultName = "Guest") {
+    activeUserId = userId;
+    let savedName = localStorage.getItem("userName_" + userId);
+    let savedAvatar = localStorage.getItem("userAvatar_" + userId);
+
+    if (!savedName) {
+        savedName = defaultName;
+        localStorage.setItem("userName_" + userId, savedName);
+    }
+    if (!savedAvatar) {
+        savedAvatar = "🚀";
+        localStorage.setItem("userAvatar_" + userId, savedAvatar);
+    }
+
+    selectedAvatar = savedAvatar;
+    updateHeaderProfile();
+};
+
+window.clearUserSession = function() {
+    activeUserId = null;
+    selectedAvatar = "🚀";
+    const greetingHeading = document.getElementById("headerGreeting");
+    greetingHeading.innerHTML = `🚀 Ayan Projects Dashboard`;
+};
+
+function openProfileModal() {
+    if (!activeUserId) return;
+    document.getElementById("profileModal").classList.remove("hidden");
+    document.getElementById("displayNameInput").value = localStorage.getItem("userName_" + activeUserId) || "";
+    highlightSelectedAvatar(selectedAvatar);
+}
+
+function closeProfileModal() {
+    document.getElementById("profileModal").classList.add("hidden");
+}
+
+function selectAvatar(emoji) {
+    selectedAvatar = emoji;
+    highlightSelectedAvatar(emoji);
+}
+
+function highlightSelectedAvatar(emoji) {
+    document.querySelectorAll(".avatar-opt").forEach(opt => {
+        opt.classList.toggle("selected", opt.innerText === emoji);
+    });
+}
+
+function saveProfile() {
+    if (!activeUserId) return;
+    const name = document.getElementById("displayNameInput").value.trim();
+    if (name) {
+        localStorage.setItem("userName_" + activeUserId, name);
+    }
+    localStorage.setItem("userAvatar_" + activeUserId, selectedAvatar);
+    
+    updateHeaderProfile();
+    closeProfileModal();
+}
+
+function updateHeaderProfile() {
+    if (!activeUserId) return;
+    const name = localStorage.getItem("userName_" + activeUserId);
+    const avatar = localStorage.getItem("userAvatar_" + activeUserId) || "🚀";
+    const greetingHeading = document.getElementById("headerGreeting");
+
+    if (name) {
+        greetingHeading.innerHTML = `<span>${avatar}</span> Welcome, ${name}!`;
+    } else {
+        greetingHeading.innerHTML = `<span>${avatar}</span> Ayan Projects Dashboard`;
+    }
 }
 
 window.onload = function() {
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    document.querySelectorAll(".favorite").forEach(star => {
-        let id = star.getAttribute("onclick").split("'")[1];
-        if (favorites.includes(id)) {
-            star.innerHTML = "⭐";
-        }
-    });
+    renderFavorites();
 };
 </script>
 
